@@ -4,20 +4,17 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
+
 app.use(express.static(path.join(__dirname)));
 
-
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'cert_tracker',
-    password: 'postgres', 
-    port: 5432,
+    connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/cert_tracker',
+    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
 app.get('/api/records', async (req, res) => {
     try {
-        const query = `
+        const recordsQuery = `
             SELECT 
                 ec.record_id,
                 e.employee_id,
@@ -34,7 +31,7 @@ app.get('/api/records', async (req, res) => {
             JOIN certification_program cp ON ec.certification_id = cp.certification_id
             ORDER BY ec.record_id ASC;
         `;
-        const { rows: records } = await pool.query(query);
+        const { rows: records } = await pool.query(recordsQuery);
 
         const statsQuery = `
             SELECT 
@@ -48,6 +45,7 @@ app.get('/api/records', async (req, res) => {
 
         res.json({ records, stats: statsRows[0] });
     } catch (err) {
+        console.error('Error fetching records:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -93,8 +91,9 @@ app.post('/api/records', async (req, res) => {
             [id, certId, expiry]
         );
 
-        res.status(201).json({ success: true, message: 'Record saved to PostgreSQL database!' });
+        res.status(201).json({ success: true, message: 'Record saved to database!' });
     } catch (err) {
+        console.error('Error inserting record:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -102,16 +101,18 @@ app.post('/api/records', async (req, res) => {
 app.delete('/api/records/:id', async (req, res) => {
     try {
         await pool.query('DELETE FROM employee_certification WHERE record_id = $1', [req.params.id]);
-        res.json({ success: true });
+        res.json({ success: true, message: 'Record deleted' });
     } catch (err) {
+        console.error('Error deleting record:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index (1).html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000 connected to PostgreSQL');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
