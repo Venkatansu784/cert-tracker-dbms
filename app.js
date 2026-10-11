@@ -91,7 +91,15 @@ function setupFormHandler() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         submitBtn.disabled = true;
 
-        const issueDateElem = document.getElementById('issueDate');
+        const issueDateVal = document.getElementById('issueDate') ? document.getElementById('issueDate').value : '';
+        const expiryDateVal = document.getElementById('expiryDate') ? document.getElementById('expiryDate').value : '';
+
+        if (issueDateVal && expiryDateVal && issueDateVal >= expiryDateVal) {
+            showToast('Issue Date must be earlier than Expiry Date', 'error');
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Save to Database';
+            submitBtn.disabled = false;
+            return;
+        }
 
         const payload = {
             id: document.getElementById('empId').value.trim(),
@@ -99,8 +107,8 @@ function setupFormHandler() {
             dept: document.getElementById('empDept').value.trim(),
             loc: document.getElementById('empLoc').value.trim(),
             cert: document.getElementById('certName').value.trim(),
-            issueDate: issueDateElem ? issueDateElem.value : '',
-            expiry: document.getElementById('expiryDate').value
+            issueDate: issueDateVal,
+            expiry: expiryDateVal
         };
 
         try {
@@ -110,14 +118,16 @@ function setupFormHandler() {
                 body: JSON.stringify(payload)
             });
 
-            if (res.ok) {
+            const data = await res.json();
+
+            if (res.ok && data.success) {
                 showToast('Record saved to database!');
                 form.reset();
                 if (document.getElementById('certTableBody')) {
                     fetchAndRenderTable();
                 }
             } else {
-                showToast('Failed to insert record', 'error');
+                showToast(data.error || 'Failed to insert record', 'error');
             }
         } catch (err) {
             showToast('Database connection error', 'error');
