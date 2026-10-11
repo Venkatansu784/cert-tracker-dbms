@@ -1,7 +1,10 @@
-require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
 const path = require('path');
+
+try {
+    require('dotenv').config();
+} catch (e) {}
 
 const app = express();
 app.use(express.json());
