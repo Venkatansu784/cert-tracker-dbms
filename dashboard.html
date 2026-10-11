@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - HR Compliance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-shield-alt" style="color: var(--primary);"></i> CertTrack
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item active"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="employee-forms.html" class="nav-item"><i class="fas fa-user-plus"></i> Add Record</a>
+            <a href="index.html" class="nav-item" style="margin-top: auto;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fas fa-search" style="color: var(--text-muted);"></i>
+                <input type="text" id="searchInput" placeholder="Search ID, Name, or Certification...">
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-bell" style="color: var(--text-muted); cursor: pointer; font-size: 1.2rem;"></i>
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600;">HR</div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="page-header">
+                <div>
+                    <h1 style="font-size: 1.75rem; margin-bottom: 8px;">Compliance Overview</h1>
+                    <p style="color: var(--text-muted);">Monitor mandatory employee certifications across global locations.</p>
+                </div>
+                <a href="employee-forms.html" class="btn-primary">
+                    <i class="fas fa-plus"></i> New Certification
+                </a>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Total Records</h3>
+                        <div class="value" id="stat-total">0</div>
+                    </div>
+                    <div class="stat-icon icon-blue"><i class="fas fa-database"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Valid & Compliant</h3>
+                        <div class="value" id="stat-valid">0</div>
+                    </div>
+                    <div class="stat-icon icon-green"><i class="fas fa-check-circle"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Expiring (30 Days)</h3>
+                        <div class="value" id="stat-warning">0</div>
+                    </div>
+                    <div class="stat-icon icon-yellow"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Action Required</h3>
+                        <div class="value" id="stat-expired">0</div>
+                    </div>
+                    <div class="stat-icon icon-red"><i class="fas fa-exclamation-circle"></i></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee Details</th>
+                            <th>Location / Dept</th>
+                            <th>Certification Program</th>
+                            <th>Expiry Date</th>
+                            <th>Compliance Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="certTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
