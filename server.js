@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
 const path = require('path');
@@ -51,7 +52,7 @@ app.get('/api/records', async (req, res) => {
 });
 
 app.post('/api/records', async (req, res) => {
-    const { id, name, dept, loc, cert, expiry } = req.body;
+    const { id, name, dept, loc, cert, issueDate, expiry } = req.body;
     try {
         let locRes = await pool.query('SELECT location_id FROM location WHERE location_name = $1', [loc]);
         if (locRes.rows.length === 0) {
@@ -86,9 +87,11 @@ app.post('/api/records', async (req, res) => {
         }
         const certId = certRes.rows[0].certification_id;
 
+        const finalIssueDate = issueDate || new Date().toISOString().split('T')[0];
+
         await pool.query(
-            'INSERT INTO employee_certification (employee_id, certification_id, issue_date, expiry_date) VALUES ($1, $2, CURRENT_DATE, $3)',
-            [id, certId, expiry]
+            'INSERT INTO employee_certification (employee_id, certification_id, issue_date, expiry_date) VALUES ($1, $2, $3, $4)',
+            [id, certId, finalIssueDate, expiry]
         );
 
         res.status(201).json({ success: true, message: 'Record saved to database!' });
