@@ -91,12 +91,15 @@ function setupFormHandler() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         submitBtn.disabled = true;
 
+        const issueDateElem = document.getElementById('issueDate');
+
         const payload = {
             id: document.getElementById('empId').value.trim(),
             name: document.getElementById('empName').value.trim(),
             dept: document.getElementById('empDept').value.trim(),
             loc: document.getElementById('empLoc').value.trim(),
             cert: document.getElementById('certName').value.trim(),
+            issueDate: issueDateElem ? issueDateElem.value : '',
             expiry: document.getElementById('expiryDate').value
         };
 
@@ -110,6 +113,9 @@ function setupFormHandler() {
             if (res.ok) {
                 showToast('Record saved to database!');
                 form.reset();
+                if (document.getElementById('certTableBody')) {
+                    fetchAndRenderTable();
+                }
             } else {
                 showToast('Failed to insert record', 'error');
             }
